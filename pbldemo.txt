@@ -1,0 +1,51 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <queue>
+#include <stack>
+#include <map>
+#include <fstream>
+#include <climits>
+using namespace std;
+
+int main() 
+{
+
+    int choice;
+
+    do {
+
+        cout << "\n=========================================================\n";
+        cout << "                  RAILWAY BOOKING SYSTEM               \n";
+        cout << "=========================================================\n";
+
+        cout << "1. Press 1 for Ticket Booking\n";
+        cout << "2. Press 2 for Canceling  Ticket\n";
+        cout << "3. Press 3 for Show Bookings\n";
+        cout << "4. Press 4 for Adding to Passenger to Waitlist\n";
+        cout << "5. Press 5 for Showing Waitlist Passengers\n";
+        cout << "6. Press 6 for Undo Transaction\n";
+        cout << "7. Press 7 for Finding the Shortest Route\n";
+        cout << "8. Press 8 for Showing the Schedule \n";
+        cout << "9. Press 9 for Saving the Data\n";
+        cout << "0. Press 0 to Exit\n";
+
+        cout << "\nEnter choice: ";
+        cin >> choice;
+
+        if (choice == 1) 
+        {
+            int id;
+            string name;
+
+            cout << "Enter the Passenger ID: ";
+            cin >> id;
+
+            cout << "Enter the Name: ";
+            cin >> name;
+        }
+
+    }while (choice != 0);
+
+    return 0;
+}
