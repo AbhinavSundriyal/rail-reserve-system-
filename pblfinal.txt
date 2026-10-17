@@ -1,0 +1,333 @@
+#include <iostream>
+#include <string>
+#include <limits>
+using namespace std;
+
+// ============ TICKET CLASS ============
+
+class Ticket
+{
+private:
+    int passengerId;
+    string passengerName;
+    int seatNumber;
+    string trainName;
+    string source;
+    string destination;
+    double distance;
+    double fare;
+
+public:
+    // Default constructor
+    Ticket()
+    {
+        passengerId = 0;
+        passengerName = "";
+        seatNumber = 0;
+        trainName = "";
+        source = "";
+        destination = "";
+        distance = 0;
+        fare = 0;
+    }
+
+    // Parameterized constructor
+    Ticket(int pid, string name, int seat,
+           string train, string src,
+           string dest, double km)
+    {
+        passengerId = pid;
+        passengerName = name;
+        seatNumber = seat;
+        trainName = train;
+        source = src;
+        destination = dest;
+        distance = km;
+        fare = 0;
+    }
+
+    int getPassengerId() const
+    {
+        return passengerId;
+    }
+
+    int getSeatNumber() const
+    {
+        return seatNumber;
+    }
+
+    void calculateFare()
+    {
+        fare = distance * 3;
+    }
+
+    void displayTicket() const
+    {
+        cout << "\n-----------------------------\n";
+        cout << "       TICKET DETAILS\n";
+        cout << "-----------------------------\n";
+        cout << "Passenger ID: " << passengerId << endl;
+        cout << "Passenger Name: " << passengerName << endl;
+        cout << "Seat Number: " << seatNumber << endl;
+        cout << "Train Name: " << trainName << endl;
+        cout << "Source: " << source << endl;
+        cout << "Destination: " << destination << endl;
+        cout << "Distance: " << distance << " km" << endl;
+        cout << "Fare: Rs. " << fare << endl;
+        cout << "-----------------------------\n";
+    }
+};
+
+// ============ BOOKING SYSTEM CLASS ============
+
+class BookingSystem
+{
+private:
+    Ticket tickets[100];
+    int totalBookings;
+
+public:
+    BookingSystem()
+    {
+        totalBookings = 0;
+    }
+
+    // Book a ticket
+    void bookTicket()
+    {
+        if (totalBookings >= 100)
+        {
+            cout << "Booking limit reached!\n";
+            return;
+        }
+
+        int pid, seat;
+        double km;
+        string name, train, src, dest;
+
+        cout << "\nEnter Passenger ID: ";
+        if (!(cin >> pid))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid Passenger ID!\n";
+            return;
+        }
+
+        if (pid <= 0)
+        {
+            cout << "Passenger ID must be positive!\n";
+            return;
+        }
+
+        // Check duplicate passenger ID
+        for (int i = 0; i < totalBookings; i++)
+        {
+            if (tickets[i].getPassengerId() == pid)
+            {
+                cout << "Passenger ID already exists!\n";
+                return;
+            }
+        }
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        cout << "Enter Passenger Name: ";
+        getline(cin, name);
+
+        if (name.empty())
+        {
+            cout << "Name cannot be empty!\n";
+            return;
+        }
+
+        cout << "Enter Seat Number: ";
+        if (!(cin >> seat))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid seat number!\n";
+            return;
+        }
+
+        if (seat <= 0)
+        {
+            cout << "Seat number must be positive!\n";
+            return;
+        }
+
+        // Check duplicate seat number
+        for (int i = 0; i < totalBookings; i++)
+        {
+            if (tickets[i].getSeatNumber() == seat)
+            {
+                cout << "This seat is already booked!\n";
+                return;
+            }
+        }
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        cout << "Enter Train Name: ";
+        getline(cin, train);
+
+        cout << "Enter Source Station: ";
+        getline(cin, src);
+
+        cout << "Enter Destination Station: ";
+        getline(cin, dest);
+
+        if (src.empty() || dest.empty())
+        {
+            cout << "Station names cannot be empty!\n";
+            return;
+        }
+
+        if (src == dest)
+        {
+            cout << "Source and destination cannot be the same!\n";
+            return;
+        }
+
+        cout << "Enter Distance in kilometres: ";
+        if (!(cin >> km))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid distance!\n";
+            return;
+        }
+
+        if (km <= 0)
+        {
+            cout << "Distance must be positive!\n";
+            return;
+        }
+
+        // Create and store the ticket
+        tickets[totalBookings] =
+            Ticket(pid, name, seat, train, src, dest, km);
+
+        tickets[totalBookings].calculateFare();
+
+        cout << "\nTicket booked successfully!\n";
+        tickets[totalBookings].displayTicket();
+
+        totalBookings++;
+    }
+
+    // Display all bookings
+    void displayAllBookings() const
+    {
+        if (totalBookings == 0)
+        {
+            cout << "\nNo bookings available!\n";
+            return;
+        }
+
+        cout << "\n===== ALL BOOKINGS =====\n";
+
+        for (int i = 0; i < totalBookings; i++)
+        {
+            tickets[i].displayTicket();
+        }
+    }
+
+    // Cancel a ticket
+    void cancelTicket()
+    {
+        int pid;
+
+        cout << "\nEnter Passenger ID to cancel: ";
+
+        if (!(cin >> pid))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid Passenger ID!\n";
+            return;
+        }
+
+        for (int i = 0; i < totalBookings; i++)
+        {
+            if (tickets[i].getPassengerId() == pid)
+            {
+                // Shift remaining tickets to the left
+                for (int j = i; j < totalBookings - 1; j++)
+                {
+                    tickets[j] = tickets[j + 1];
+                }
+
+                totalBookings--;
+
+                cout << "Ticket cancelled successfully!\n";
+                return;
+            }
+        }
+
+        cout << "Ticket not found!\n";
+    }
+
+    // Menu
+    void menu()
+    {
+        int choice;
+
+        do
+        {
+            cout << "\n==============================\n";
+            cout << " RAILWAY RESERVATION SYSTEM\n";
+            cout << "==============================\n";
+            cout << "1. Book Ticket\n";
+            cout << "2. Cancel Ticket\n";
+            cout << "3. Show All Bookings\n";
+            cout << "0. Exit\n";
+            cout << "Enter your choice: ";
+
+            if (!(cin >> choice))
+            {
+                if (cin.eof())
+                    return;
+
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Please enter a valid number!\n";
+                continue;
+            }
+
+            switch (choice)
+            {
+                case 1:
+                    bookTicket();
+                    break;
+
+                case 2:
+                    cancelTicket();
+                    break;
+
+                case 3:
+                    displayAllBookings();
+                    break;
+
+                case 0:
+                    cout << "Thank you for using the system!\n";
+                    break;
+
+                default:
+                    cout << "Invalid choice! Try again.\n";
+            }
+
+        } while (choice != 0);
+    }
+};
+
+// ============ MAIN FUNCTION ============
+
+int main()
+{
+    BookingSystem system;
+    system.menu();
+
+    return 0;
+}
+
